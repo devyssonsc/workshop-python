@@ -1,33 +1,54 @@
-import requests, streamlit, pandas
+import requests, streamlit, pandas, ipaddress
+# current_ip = requests.get("https://ipinfo.io/ip")
 
-info_ip = requests.get("https://ipinfo.io/1.1.1.1/json")
+# info_ip = requests.get(f"https://ipinfo.io/{current_ip.text}/json")
 
-#print(info_ip.text)
+# latitude = info_ip.json()['loc'].split(',')[0]
 
-# print(info_ip.json()['loc'])
+# longitude = info_ip.json()['loc'].split(',')[1]
 
-# print(info_ip.json()['loc'].split(','))
+# meteo = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m,wind_speed_10m")
 
-latitude = info_ip.json()['loc'].split(',')[0]
+# ip = info_ip.json()['ip']
 
-longitude = info_ip.json()['loc'].split(',')[1]
+# streamlit.set_page_config(page_title="Workshop Python")
+# streamlit.write("IP = " + ip)
 
-meteo = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m,wind_speed_10m")
+# streamlit.write("## Meteorologia Info")
+# data = pandas.DataFrame({
+#     'latitude': [float(latitude)],
+#     'longitude' : [float(longitude)]
+# })
 
-# print(meteo.json())
+# streamlit.map(data,use_container_width=True)
 
-ip = info_ip.json()['ip']
+with streamlit.form(key="qualquer_coisa"):
+    user_input = streamlit.text_input("O seu nome: ")
+    submit_button = streamlit.form_submit_button(label= "Enviar")
+    if submit_button == True:
+        streamlit.write("O seu input foi: " + user_input)
+        try:
+            ipaddress.ip_address(user_input)
+            info_ip = requests.get(f"https://ipinfo.io/{user_input}/json")
 
-streamlit.set_page_config(page_title="Workshop Python")
-streamlit.write("IP = " + ip)
+            latitude = info_ip.json()['loc'].split(',')[0]
 
-streamlit.write("## Meteorologia Info")
-data = pandas.DataFrame({
-    'latitude': [float(latitude)],
-    'longitude' : [float(longitude)]
-})
+            longitude = info_ip.json()['loc'].split(',')[1]
 
-streamlit.map(data,use_container_width=True)
+            meteo = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m,wind_speed_10m")
 
-user_input = streamlit.text_input("O seu nome: ")
-streamlit.write(user_input)
+            data = pandas.DataFrame({
+                'latitude': [float(latitude)],
+                'longitude' : [float(longitude)]
+            })
+
+            
+            streamlit.map(data,use_container_width=True)
+        except:
+            streamlit.write("ip = " + user_input+ 'invalido')
+     
+    else:
+        streamlit.write("Aperte o botão para submeter o seu texto")
+
+
+        
